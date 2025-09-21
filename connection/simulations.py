@@ -1,17 +1,57 @@
+#     Copyright (c) <2025> <University of Paderborn>
+#     Signal and System Theory Group, Univ. of Paderborn, https://sst-group.org/
+#     https://github.com/SSTGroup/independent_vector_analysis
+#
+#     Permission is hereby granted, free of charge, to any person
+#     obtaining a copy of this software and associated documentation
+#     files (the "Software"), to deal in the Software without restriction,
+#     including without limitation the rights to use, copy, modify and
+#     merge the Software, subject to the following conditions:
+#
+#     1.) The Software is used for non-commercial research and
+#        education purposes.
+#
+#     2.) The above copyright notice and this permission notice shall be
+#        included in all copies or substantial portions of the Software.
+#
+#     3.) Publication, Distribution, Sublicensing, and/or Selling of
+#        copies or parts of the Software requires special agreements
+#        with the University of Paderborn and is in general not permitted.
+#
+#     4.) Modifications or contributions to the software must be
+#        published under this license. The University of Paderborn
+#        is granted the non-exclusive right to publish modifications
+#        or contributions in future versions of the Software free of charge.
+#
+#     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+#     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+#     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+#     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+#     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+#     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+#     OTHER DEALINGS IN THE SOFTWARE.
+#
+#     Persons using the Software are encouraged to notify the
+#     Signal and System Theory Group at the University of Paderborn
+#     about bugs. Please reference the Software in your publications
+#     if it was used for them.
+
+
 import numpy as np
 from scipy.linalg import sqrtm, block_diag
-from scipy.stats import random_correlation
 
 from pathlib import Path
 
 from independent_vector_analysis.helpers_iva import _bss_isi
-from independent_vector_analysis.consistent_iva import consistent_iva
-from independent_vector_analysis.visualization import plot_scv_covs
+from independent_vector_analysis.iva_g import iva_g
 
 from multiset_canonical_correlation_analysis import simulations, mcca
 
+from .consistent_iva import consistent_iva
 
-def scv_covs_with_noisy_blocks(N, K, indices, alpha):
+
+def scv_covs_with_noisy_blocks(K, indices, alpha):
     """
     Return SCV covariance matrices of dimension (K,K,N) that are generated as
     C = (1-alpha) v v.T + alpha Q Q^T,
@@ -45,33 +85,31 @@ def scv_covs_with_noisy_blocks(N, K, indices, alpha):
     return scv_cov
 
 
-def experiment_1(alpha=0.9):
+def generate_scv_covs(alpha=0.9):
     N = 5
     K = 20
     scv_cov = np.zeros((K, K, N))
 
     # SCVs have patterns
-    cov = scv_covs_with_noisy_blocks(1, K, [0, 1, 2, 5, 7, 9, 10, 11, 13, 15], alpha=alpha)
+    cov = scv_covs_with_noisy_blocks(K, [0, 1, 2, 5, 7, 9, 10, 11, 13, 15], alpha=alpha)
     np.fill_diagonal(cov, 1)
     scv_cov[:, :, 0] = cov
 
-    cov = scv_covs_with_noisy_blocks(1, K, [0, 1, 2, 3, 4, 5, 15, 16, 17], alpha=alpha)
+    cov = scv_covs_with_noisy_blocks(K, [0, 1, 2, 3, 4, 5, 15, 16, 17], alpha=alpha)
     np.fill_diagonal(cov, 1)
     scv_cov[:, :, 1] = cov
 
-    cov = scv_covs_with_noisy_blocks(1, K, [4, 5, 7, 8, 9, 17, 18, 19], alpha=alpha)
+    cov = scv_covs_with_noisy_blocks(K, [4, 5, 7, 8, 9, 17, 18, 19], alpha=alpha)
     np.fill_diagonal(cov, 1)
     scv_cov[:, :, 2] = cov
 
-    cov = scv_covs_with_noisy_blocks(1, K, [9, 11, 13, 15, 16, 17, 19], alpha=alpha)
+    cov = scv_covs_with_noisy_blocks(K, [9, 11, 13, 15, 16, 17, 19], alpha=alpha)
     np.fill_diagonal(cov, 1)
     scv_cov[:, :, 3] = cov
 
-    cov = scv_covs_with_noisy_blocks(1, K, [0, 1, 4, 7, 11, 15], alpha=alpha)
+    cov = scv_covs_with_noisy_blocks(K, [0, 1, 4, 7, 11, 15], alpha=alpha)
     np.fill_diagonal(cov, 1)
     scv_cov[:, :, 4] = cov
-
-    # plot_scv_covs(scv_cov)
 
     return scv_cov
 
@@ -86,9 +124,9 @@ def save_joint_isi(V, N, K, ortho, n_montecarlo, use_true_C_xx, algorithms, alph
     for run in range(n_montecarlo):
         print(f'Start run {run}...')
 
-        scv_cov = experiment_1(alpha=alpha)
+        scv_cov = generate_scv_covs(alpha=alpha)
 
-        filename = Path(Path(__file__).parent.parent, f'simulation_results/{folder}_true_run{run}.npy')
+        filename = Path(Path(__file__).parent.parent, f'simulation_results2/{folder}_true_run{run}.npy')
         np.save(filename, {'joint_isi': 0, 'scv_cov': scv_cov})
 
         X, A, S = simulations.generate_datasets_from_covariance_matrices(scv_cov, V, orthogonal_A=ortho)
@@ -176,12 +214,11 @@ def save_joint_isi(V, N, K, ortho, n_montecarlo, use_true_C_xx, algorithms, alph
 
         # use W_init from most consistent IVA-G run as initialization for all algorithms
         ivag_results = consistent_iva(X_whitened, which_iva='iva_g', W_init=W_init_list, n_runs=10, A=A_whitened,
-                                      R_xx=C_xx, whiten=False, parallel=False, opt_approach='gradient')
+                                      R_xx=C_xx, whiten=False, opt_approach='gradient')
         W_init = ivag_results['W_init']
 
         # Newton IVA-G
-        W_ivag_newton = consistent_iva(X_whitened, which_iva='iva_g', W_init=[W_init], n_runs=1, A=A_whitened,
-                                       R_xx=C_xx, whiten=False, parallel=False)['W']
+        W_ivag_newton = iva_g(X_whitened, opt_approach='newton', W_init=W_init, A=A_whitened, R_xx=C_xx, whiten=False)[0]
 
         # calculate SCV cov
         s_hat_cov = np.zeros((K, K, N))
@@ -193,7 +230,7 @@ def save_joint_isi(V, N, K, ortho, n_montecarlo, use_true_C_xx, algorithms, alph
                     s_hat_cov[k2, k1, n] = s_hat_cov[k1, k2, n]  # Sigma_n is symmetric
 
         filename = Path(Path(__file__).parent.parent,
-                        f'simulation_results/{folder}_iva_g_newton_run{run}.npy')
+                        f'simulation_results2/{folder}_iva_g_newton_run{run}.npy')
         np.save(filename, {'joint_isi': _bss_isi(W_ivag_newton, A_whitened)[1], 'scv_cov': s_hat_cov})
 
         for algorithm_idx, algorithm in enumerate(algorithms):
@@ -203,7 +240,7 @@ def save_joint_isi(V, N, K, ortho, n_montecarlo, use_true_C_xx, algorithms, alph
 
             else:
                 results = consistent_iva(X_whitened, which_iva=algorithm, W_init=[W_init], n_runs=1, A=A_whitened,
-                                         R_xx=C_xx, whiten=False, parallel=False, opt_approach='gradient')
+                                         R_xx=C_xx, whiten=False, opt_approach='gradient')
                 W = results['W']
 
             # calculate SCV cov
@@ -216,5 +253,5 @@ def save_joint_isi(V, N, K, ortho, n_montecarlo, use_true_C_xx, algorithms, alph
                         s_hat_cov[k2, k1, n] = s_hat_cov[k1, k2, n]  # Sigma_n is symmetric
 
             filename = Path(Path(__file__).parent.parent,
-                            f'simulation_results/{folder}_{algorithm}_run{run}.npy')
+                            f'simulation_results2/{folder}_{algorithm}_run{run}.npy')
             np.save(filename, {'joint_isi': _bss_isi(W, A_whitened)[1], 'scv_cov': s_hat_cov})

@@ -1,55 +1,47 @@
+#     Copyright (c) <2025> <University of Paderborn>
+#     Signal and System Theory Group, Univ. of Paderborn, https://sst-group.org/
+#     https://github.com/SSTGroup/independent_vector_analysis
+#
+#     Permission is hereby granted, free of charge, to any person
+#     obtaining a copy of this software and associated documentation
+#     files (the "Software"), to deal in the Software without restriction,
+#     including without limitation the rights to use, copy, modify and
+#     merge the Software, subject to the following conditions:
+#
+#     1.) The Software is used for non-commercial research and
+#        education purposes.
+#
+#     2.) The above copyright notice and this permission notice shall be
+#        included in all copies or substantial portions of the Software.
+#
+#     3.) Publication, Distribution, Sublicensing, and/or Selling of
+#        copies or parts of the Software requires special agreements
+#        with the University of Paderborn and is in general not permitted.
+#
+#     4.) Modifications or contributions to the software must be
+#        published under this license. The University of Paderborn
+#        is granted the non-exclusive right to publish modifications
+#        or contributions in future versions of the Software free of charge.
+#
+#     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+#     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+#     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+#     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+#     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+#     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+#     OTHER DEALINGS IN THE SOFTWARE.
+#
+#     Persons using the Software are encouraged to notify the
+#     Signal and System Theory Group at the University of Paderborn
+#     about bugs. Please reference the Software in your publications
+#     if it was used for them.
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplot2tikz
 from pathlib import Path
-import pandas as pd
-
-
-# grid for performance
-
-def plot_results_for_different_NK(V, NK_pairs, R, alpha, ortho, use_true_C_xx, n_montecarlo, algorithms, save=False):
-    # only varying parameters in this plot are N and K
-
-    results = np.zeros((len(NK_pairs), len(algorithms), n_montecarlo))
-    for idx, (N, K) in enumerate(NK_pairs):  # SCVs and datasets
-        if use_true_C_xx:
-            folder = 'true_C'
-        else:
-            folder = f'V_{V}'
-        if R == 'K':
-            folder += f'_N_{N}_K_{K}_R_{K}_alpha_{alpha}_ortho_{ortho}'
-        else:
-            folder += f'_N_{N}_K_{K}_R_{R}_alpha_{alpha}_ortho_{ortho}'
-        for alg_idx, algorithm in enumerate(algorithms):
-            for run in range(n_montecarlo):
-                filename = Path(Path(__file__).parent.parent,
-                                f'simulation_results/{folder}_{algorithm}_run{run}.npy')
-                results[idx, alg_idx, run] = np.load(filename, allow_pickle=True).item()['joint_isi']
-
-    plt.figure(figsize=(5, 2.5))
-
-    for alg_idx, algorithm in enumerate(algorithms):
-        plt.errorbar(np.arange(len(NK_pairs)), np.mean(results[:, alg_idx, :], axis=1),
-                     np.std(results[:, alg_idx, :], axis=1),
-                     linestyle=':', fmt='D', markersize=3, capsize=2, lw=1.1, label=f'{algorithm}')
-    plt.xticks(np.arange(len(NK_pairs)), NK_pairs, fontsize=12)
-    plt.xlabel(r'rank $(N,K)$', fontsize=12)
-    plt.ylim([-0.006, .606])
-    plt.yticks(np.arange(0, 0.61, 0.2), fontsize=12)
-    plt.ylabel('jISI', fontsize=12)
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-
-    if save:
-        plt.tight_layout()
-        plt.subplots_adjust(wspace=0.2)
-        matplot2tikz.save(f'joint_isi_NK.tex', encoding='utf8', axis_width='7.5cm',
-                          axis_height='5cm', standalone=True)
-        plt.savefig(f'joint_isi_NK.pdf')
-    else:
-        plt.title(f'joint_isi for different values of (N,K)')
-        plt.tight_layout()
-        plt.subplots_adjust(wspace=0.2)
-        plt.show()
 
 
 def plot_results_for_different_samples(V_values, N, K, ortho, n_montecarlo, algorithms, alpha=0.9, rho_d=0.1,
