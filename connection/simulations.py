@@ -126,7 +126,7 @@ def save_joint_isi(V, N, K, ortho, n_montecarlo, use_true_C_xx, algorithms, alph
 
         scv_cov = generate_scv_covs(alpha=alpha)
 
-        filename = Path(Path(__file__).parent.parent, f'simulation_results2/{folder}_true_run{run}.npy')
+        filename = Path(Path(__file__).parent.parent, f'simulation_results/{folder}_true_run{run}.npy')
         np.save(filename, {'joint_isi': 0, 'scv_cov': scv_cov})
 
         X, A, S = simulations.generate_datasets_from_covariance_matrices(scv_cov, V, orthogonal_A=ortho)
@@ -206,9 +206,6 @@ def save_joint_isi(V, N, K, ortho, n_montecarlo, use_true_C_xx, algorithms, alph
 
             for k in range(K):
                 W_init[:, :, k] = np.linalg.solve(sqrtm(W_init[:, :, k] @ W_init[:, :, k].T), W_init[:, :, k])
-                # # add true inverse of A^-1 to the W_init
-                # W_init[:, :, k] = 0.9 * np.linalg.inv(A_whitened[:, :, k]) + 0.1 * W_init[:, :, k]
-                # W_init[:, :, k] = np.linalg.solve(sqrtm(W_init[:, :, k] @ W_init[:, :, k].T), W_init[:, :, k])
 
             W_init_list.append(W_init)
 
@@ -218,7 +215,8 @@ def save_joint_isi(V, N, K, ortho, n_montecarlo, use_true_C_xx, algorithms, alph
         W_init = ivag_results['W_init']
 
         # Newton IVA-G
-        W_ivag_newton = iva_g(X_whitened, opt_approach='newton', W_init=W_init, A=A_whitened, R_xx=C_xx, whiten=False)[0]
+        W_ivag_newton = iva_g(X_whitened, opt_approach='newton', W_init=W_init, A=A_whitened, R_xx=C_xx, whiten=False)[
+            0]
 
         # calculate SCV cov
         s_hat_cov = np.zeros((K, K, N))
@@ -230,7 +228,7 @@ def save_joint_isi(V, N, K, ortho, n_montecarlo, use_true_C_xx, algorithms, alph
                     s_hat_cov[k2, k1, n] = s_hat_cov[k1, k2, n]  # Sigma_n is symmetric
 
         filename = Path(Path(__file__).parent.parent,
-                        f'simulation_results2/{folder}_iva_g_newton_run{run}.npy')
+                        f'simulation_results/{folder}_iva_g_newton_run{run}.npy')
         np.save(filename, {'joint_isi': _bss_isi(W_ivag_newton, A_whitened)[1], 'scv_cov': s_hat_cov})
 
         for algorithm_idx, algorithm in enumerate(algorithms):
@@ -253,5 +251,5 @@ def save_joint_isi(V, N, K, ortho, n_montecarlo, use_true_C_xx, algorithms, alph
                         s_hat_cov[k2, k1, n] = s_hat_cov[k1, k2, n]  # Sigma_n is symmetric
 
             filename = Path(Path(__file__).parent.parent,
-                            f'simulation_results2/{folder}_{algorithm}_run{run}.npy')
+                            f'simulation_results/{folder}_{algorithm}_run{run}.npy')
             np.save(filename, {'joint_isi': _bss_isi(W, A_whitened)[1], 'scv_cov': s_hat_cov})

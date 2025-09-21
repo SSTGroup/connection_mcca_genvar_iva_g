@@ -48,7 +48,8 @@ from independent_vector_analysis.initializations import _jbss_sos, _cca
 
 def orthogonal_iva_g(X, whiten=True,
                      verbose=False, A=None, W_init=None, jdiag_initW=False, max_iter=1024,
-                     W_diff_stop=1e-6, alpha0=1.0, return_W_change=False, orthogonal=False, opt_approach='newton', R_xx=None):
+                     W_diff_stop=1e-6, alpha0=1.0, return_W_change=False, orthogonal=False, opt_approach='newton',
+                     R_xx=None):
     """
     Implementation of orthogonal independent vector analysis with Gaussian model (o-IVA-G) [1].
 
@@ -291,20 +292,20 @@ def orthogonal_iva_g(X, whiten=True,
                     H[k2 * N: k2 * N + N, k1 * N: k1 * N + N] = Hs.T
 
             # concatenate the update rules in one big matrix. Each NxN block belongs to one W^[k]
-            if opt_approach== 'newton':
+            if opt_approach == 'newton':
                 U[n, :] = np.linalg.solve(H, grad.flatten('F'))
-            elif opt_approach== 'gradient':
+            elif opt_approach == 'gradient':
                 U[n, :] = grad.flatten('F')
-            elif opt_approach== 'norm_gradient':
+            elif opt_approach == 'norm_gradient':
                 U[n, :] = norm_grad.flatten('F')
 
         # update W^[k]
         for k in range(K):
             U_k = U[:, k * N:(k + 1) * N]  # same as: standard matrix update when based on samples
-            if orthogonal=='geodesic':
+            if orthogonal == 'geodesic':
                 E_k = U_k @ W[:, :, k].T - W[:, :, k] @ U_k.T  # project U^[k] W^[k]^T on nearest skew-symmetric matrix
                 W[:, :, k] = sc.linalg.expm(-alpha0 * E_k) @ W[:, :, k]
-            elif orthogonal=='simple':
+            elif orthogonal == 'simple':
                 # make W^[k] simply orthogonal
                 W[:, :, k] -= alpha0 * U_k
                 W[:, :, k] = np.linalg.solve(sc.linalg.sqrtm(W[:, :, k] @ W[:, :, k].T), W[:, :, k])

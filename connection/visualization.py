@@ -61,7 +61,7 @@ def plot_results_for_different_samples(V_values, N, K, ortho, n_montecarlo, algo
     V_labels = [100, 1000, 10000, 100000]
     V_label_values = [f'${V_value}$' for V_value in V_labels]
 
-    alg_names = {'n-o-iva_g': 'IVA-G', 'o-iva_g': 'o-IVA-G', 'd-o-iva_g': 'd-o-IVA-G', 'genvar': 'genvar',
+    alg_names = {'iva_g': 'IVA-G', 'o-iva_g': 'o-IVA-G', 'd-o-iva_g': 'd-o-IVA-G', 'genvar': 'genvar',
                  'iva_g_newton': 'IVA-G (Newton)'}
 
     plt.axhline(y=0.05, color='tab:gray', linestyle=':', linewidth=1.1)
@@ -106,7 +106,7 @@ def plot_results_for_different_alpha(alpha_values, N, K, ortho, n_montecarlo, al
     alpha_labels = [0.1, 0.3, 0.5, 0.7, 0.9]
     alpha_label_values = [f'${alpha_value}$' for alpha_value in alpha_labels]
 
-    alg_names = {'n-o-iva_g': 'IVA-G', 'iva_g_newton': 'IVA-G (Newton)', 'o-iva_g': 'o-IVA-G', 'd-o-iva_g': 'd-o-IVA-G',
+    alg_names = {'iva_g': 'IVA-G', 'iva_g_newton': 'IVA-G (Newton)', 'o-iva_g': 'o-IVA-G', 'd-o-iva_g': 'd-o-IVA-G',
                  'genvar': 'genvar'}
 
     plt.axhline(y=0.05, color='tab:gray', linestyle=':', linewidth=1.1)
@@ -134,7 +134,7 @@ def plot_results_for_different_alpha(alpha_values, N, K, ortho, n_montecarlo, al
         plt.show()
 
 
-def plot_one_run_scv_covs_checkerboard(V, N, K, ortho, run, use_true_C_xx, algorithms, alpha=0.9, save=False):
+def plot_scv_covs_one_run(V, N, K, ortho, run, use_true_C_xx, algorithms, alpha=0.9, save=False):
     if use_true_C_xx:
         folder = 'true_C'
     else:
@@ -145,8 +145,8 @@ def plot_one_run_scv_covs_checkerboard(V, N, K, ortho, run, use_true_C_xx, algor
     n_rows = len(algorithms)
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(1.2 * n_cols, 1.2 * n_rows), layout='constrained')
 
-    alg_names = {'iva_g_newton': 'IVA-G (Newton)', 'o-iva_g': 'o-IVA-G', 'd-o-iva_g': 'd-o-IVA-G', 'genvar': 'genvar',
-                 'n-o-iva_g': 'IVA-G', 'true': 'true'}
+    alg_names = {'true': 'true', 'iva_g': 'IVA-G', 'iva_g_newton': 'IVA-G (Newton)', 'o-iva_g': 'o-IVA-G',
+                 'd-o-iva_g': 'd-o-IVA-G', 'genvar': 'genvar'}
 
     # Add data to image grid and plot
     for algorithm_idx, algorithm in enumerate(algorithms):

@@ -40,8 +40,6 @@
 
 import numpy as np
 
-from independent_vector_analysis.helpers_iva import _bss_isi
-from independent_vector_analysis.iva_g import iva_g
 from independent_vector_analysis.consistent_iva import _run_selection_cross_isi
 
 from .orthogonal_iva_g import orthogonal_iva_g
