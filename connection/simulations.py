@@ -129,7 +129,7 @@ def save_joint_isi(V, N, K, ortho, n_montecarlo, use_true_C_xx, algorithms, alph
         filename = Path(Path(__file__).parent.parent, f'simulation_results/{folder}_true_run{run}.npy')
         np.save(filename, {'joint_isi': 0, 'scv_cov': scv_cov})
 
-        X, A, S = simulations.generate_datasets_from_covariance_matrices(scv_cov, V, orthogonal_A=ortho)
+        X, A, S = simulations.generate_datasets_from_covariance_matrices(scv_cov, V)
 
         if use_true_C_xx:
             # true joint SCV covariance matrix

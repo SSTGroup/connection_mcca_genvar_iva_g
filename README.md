@@ -18,8 +18,11 @@ Required third party packages will automatically be installed.
 
 ## Generating Simulations and Results
 
+IMPORTANT NOTE:
+A folder called _simulation_results_ must manually be created in _connection_mcca_genvar_iva_g_ before starting the simulations.
+
 The simulations can be run by calling the functions `test_save_paper_results_alpha()` and `test_save_paper_results_samples()` in `test_experiments.py`.
-After running the code, the folder *./simulation_results* will contain the generated .npy files.
+After running the code, the folder *connection_mcca_genvar_iva_g/simulation_results* will contain the generated .npy files.
 
 ## Visualizing Results
 
