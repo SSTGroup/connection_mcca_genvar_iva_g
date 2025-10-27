@@ -6,7 +6,7 @@ def readme():
         return f.read()
 
 
-setup(name='icassp',
+setup(name='connection',
       version='0.0.1',
       description='Implementation of the simulations in our ICASSP2026 paper',
       long_description=readme(),
@@ -21,12 +21,11 @@ setup(name='icassp',
       author='Isabell Lehmann',
       author_email='isabell.lehmann@sst.upb.de',
       license='LICENSE',
-      packages=['icassp'],
-      python_requires='>=3.6',
+      packages=['connection'],
+      python_requires='>=3.11',
       install_requires=[
           'numpy',
           'scipy',
-          'time',
           'pathlib',
           'pytest',
           'matplotlib',
