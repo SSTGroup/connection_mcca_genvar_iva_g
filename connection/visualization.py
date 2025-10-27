@@ -44,11 +44,10 @@ import matplot2tikz
 from pathlib import Path
 
 
-def plot_results_for_different_samples(V_values, N, K, ortho, n_montecarlo, algorithms, alpha=0.9, rho_d=0.1,
-                                       save=False):
+def plot_results_for_different_samples(V_values, n_montecarlo, algorithms, alpha=0.9, save=False):
     results = np.zeros((len(V_values), len(algorithms), n_montecarlo))
     for V_idx, V in enumerate(V_values):  # SCVs and datasets
-        folder = f'V_{V}_alpha_{alpha}_ortho_{ortho}'
+        folder = f'V_{V}_alpha_{alpha}'
         for alg_idx, algorithm in enumerate(algorithms):
             for run in range(n_montecarlo):
                 filename = Path(Path(__file__).parent.parent,
@@ -90,10 +89,10 @@ def plot_results_for_different_samples(V_values, N, K, ortho, n_montecarlo, algo
         plt.show()
 
 
-def plot_results_for_different_alpha(alpha_values, N, K, ortho, n_montecarlo, algorithms, save=False):
+def plot_results_for_different_alpha(alpha_values, n_montecarlo, algorithms, save=False):
     results = np.zeros((len(alpha_values), len(algorithms), n_montecarlo))
     for alpha_idx, alpha in enumerate(alpha_values):  # SCVs and datasets
-        folder = f'true_C_alpha_{alpha}_ortho_{ortho}'
+        folder = f'true_C_alpha_{alpha}'
         for alg_idx, algorithm in enumerate(algorithms):
             for run in range(n_montecarlo):
                 filename = Path(Path(__file__).parent.parent,
@@ -134,12 +133,12 @@ def plot_results_for_different_alpha(alpha_values, N, K, ortho, n_montecarlo, al
         plt.show()
 
 
-def plot_scv_covs_one_run(V, N, K, ortho, run, use_true_C_xx, algorithms, alpha=0.9, save=False):
+def plot_scv_covs_one_run(V, N, run, use_true_C_xx, algorithms, alpha=0.9, save=False):
     if use_true_C_xx:
         folder = 'true_C'
     else:
         folder = f'V_{V}'
-    folder += f'_alpha_{alpha}_ortho_{ortho}'
+    folder += f'_alpha_{alpha}'
 
     n_cols = N
     n_rows = len(algorithms)
@@ -171,7 +170,7 @@ def plot_scv_covs_one_run(V, N, K, ortho, run, use_true_C_xx, algorithms, alpha=
             axes[algorithm_idx, scv_idx].tick_params(which='minor', bottom=False, left=False)
 
         axes[algorithm_idx, 0].set_ylabel(
-            f'{alg_names[algorithm]} \\\\ jISI={res['joint_isi']:.1e}',
+            f"{alg_names[algorithm]} \\\\ jISI={res['joint_isi']:.1e}",
             # f' \n $\sum$logdet = {np.sum(np.linalg.slogdet(scv_cov.T)[1]):2.1f}',
             rotation=90, fontsize=9, labelpad=10, va='center')  # ,fontweight='bold')
         # f'{algorithm}', rotation=0, labelpad=22, va='center', fontweight='bold')

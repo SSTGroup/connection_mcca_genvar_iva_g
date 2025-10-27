@@ -114,12 +114,12 @@ def generate_scv_covs(alpha=0.9):
     return scv_cov
 
 
-def save_joint_isi(V, N, K, ortho, n_montecarlo, use_true_C_xx, algorithms, alpha=0.0):
+def save_joint_isi(V, N, K, n_montecarlo, use_true_C_xx, algorithms, alpha=0.0):
     if use_true_C_xx:
         folder = 'true_C'
     else:
         folder = f'V_{V}'
-    folder += f'_alpha_{alpha}_ortho_{ortho}'
+    folder += f'_alpha_{alpha}'
 
     for run in range(n_montecarlo):
         print(f'Start run {run}...')
