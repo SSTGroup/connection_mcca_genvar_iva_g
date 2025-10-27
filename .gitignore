@@ -2,3 +2,4 @@ simulation_results/
 connection/tests/__pycache__/
 connection/__pycache__/
 .idea/
+connection.egg-info/
