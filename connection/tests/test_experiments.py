@@ -103,7 +103,7 @@ def test_plot_results_for_different_samples():
     plot_results_for_different_samples(V_values, N, K, ortho, n_montecarlo, algorithms, alpha=0.7, save=False)
 
 
-def test_plot_results_for_different_subspace_structure():
+def test_plot_scv_covs_one_run():
     use_true_C_xx = True
     N = 5
     K = 20
